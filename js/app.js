@@ -8,7 +8,7 @@ var mouseY = 0;
 var color = [0, 0, 0.14];
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
-var particleCount = 20000;
+var numOfAttractors = 50;
 var attractors = [];
 
 
@@ -32,27 +32,30 @@ function init() {
   scene = new THREE.Scene();
   scene.fog = new THREE.FogExp2(0x000000, 0.0007);
 
-  geometry = new THREE.Geometry();
-
-  for (i = 0; i < particleCount; i++) {
-    var x = random(-w, w);
-    var y = random(-h, h);
-    var z = random(-w, w);
-
-    var v = new THREE.Vector3(random(-w, w), random(-h, h), random(-w, w));
-    v.normalize();
-    v.multiplyScalar(300);
-
-    var att = new Attractor(v);
-    attractors.push(att);
-
-    geometry.vertices.push(v);
-  }
-
   // Add particles to scene
-  material = new THREE.PointCloudMaterial({ size: 1 });
-  particles = new THREE.PointCloud(geometry, material);
-  scene.add(particles);
+  for (var i = 0; i < numOfAttractors; i ++ ) {
+    geometry = new THREE.Geometry();
+
+    for (var j = 0; j < 500; j++) {
+
+      var x = random(-w, w);
+      var y = random(-h, h);
+      var z = random(-w, w);
+
+      var v = new THREE.Vector3(random(-w, w), random(-h, h), random(-w, w));
+      v.normalize();
+      v.multiplyScalar(300);
+
+      geometry.vertices.push(v);
+    }
+
+    material = new THREE.PointCloudMaterial({ size: 1 });
+    particles = new THREE.PointCloud(geometry, material);
+    scene.add(particles);
+
+    var att = new Attractor(particles);
+    attractors.push(att);
+  }
 
   // Build and attach renderer to DOM
   renderer = new THREE.WebGLRenderer();
@@ -89,13 +92,17 @@ function render() {
   camera.position.y += (-mouseY - camera.position.y) * 0.05;
   camera.lookAt(scene.position);
 
-  for (i = 0; i < scene.children.length; i++) {
-    var object = scene.children[i];
+  // for (var i = 0; i < scene.children.length; i++) {
+  //   var object = scene.children[i];
 
-    if (object instanceof THREE.PointCloud) {
-      // object.rotation.y = time * (i < 4 ? i + 1 : -(i + 1));
-      // object.position.set(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
-    }
+  //   if (object instanceof THREE.PointCloud) {
+  //     // object.rotation.y = time * (i < 4 ? i + 1 : -(i + 1));
+  //     // object.position.set(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
+  //   }
+  // }
+
+  for (var i = 0; i < numOfAttractors; i++) {
+    attractors[i].render();
   }
 
   h = (360 * (color[0] + time) % 360) / 360;
