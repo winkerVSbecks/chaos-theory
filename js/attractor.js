@@ -3,7 +3,8 @@
 var w = window.innerWidth;
 var h = window.innerHeight;
 var newAmplitude;
-var AMP = 3;
+var AMPLITUDE_THRESHOLD = 3;
+var SCALE_FACTOR = 100;
 
 window.onclick = function () {
   newAmplitude = 4;
@@ -13,8 +14,8 @@ window.onclick = function () {
 // Attractor
 // -----------------------------
 var Attractor = function (particles) {
-  this.returnVelocity = Math.random() * 0.0005;
-  this.amplitude = AMP;
+  this.returnVelocity = Math.random() * 0.00025;
+  this.amplitude = AMPLITUDE_THRESHOLD;
   this.fadeOut = false;
   this.restartCounter = 0;
   this.numCurves = 500;
@@ -32,7 +33,7 @@ var Attractor = function (particles) {
 
   this.spherePoint = new THREE.Vector3(random(-w, w), random(-h, h), random(-w, w));
   this.spherePoint.normalize();
-  this.spherePoint.multiplyScalar(AMP);
+  this.spherePoint.multiplyScalar(AMPLITUDE_THRESHOLD);
 
   this.x = this.spherePoint.x;
   this.y = this.spherePoint.y;
@@ -96,7 +97,7 @@ Attractor.prototype.drawPath = function (path) {
 
     this.amplitude = newAmplitude > this.amplitude ?  newAmplitude : this.amplitude;
 
-    if (this.amplitude > AMP) {
+    if (this.amplitude > AMPLITUDE_THRESHOLD) {
       this.amplitude -= this.returnVelocity;
       // newAmplitude = 3;
     }
@@ -118,7 +119,7 @@ Attractor.prototype.drawPath = function (path) {
     // The Chaos
     // stroke(c0.x * 30 + 90, 25 - restartCounter / 2);
     c1.normalize();
-    c1.multiplyScalar(this.amplitude * 100);
+    c1.multiplyScalar(this.amplitude * SCALE_FACTOR);
     this.particles.geometry.vertices[i].set(c1.x, c1.y, c1.z);
   }
   this.particles.geometry.vertices.needsUpdate = true;

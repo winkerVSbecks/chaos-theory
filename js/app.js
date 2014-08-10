@@ -45,7 +45,7 @@ function init() {
 
       var v = new THREE.Vector3(random(-w, w), random(-h, h), random(-w, w));
       v.normalize();
-      v.multiplyScalar(AMP);
+      v.multiplyScalar(AMPLITUDE_THRESHOLD);
 
       geometry.vertices.push(v);
     }
