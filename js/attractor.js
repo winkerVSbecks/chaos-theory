@@ -2,14 +2,20 @@
 
 var w = window.innerWidth;
 var h = window.innerHeight;
-var newAmplitude, amplitude;
+var newAmplitude;
+var AMP = 3;
+
+window.onclick = function () {
+  newAmplitude = 4;
+  console.log('boom', newAmplitude);
+};
 
 // -----------------------------
 // Attractor
 // -----------------------------
 var Attractor = function (particles) {
-  this.returnVelocity = random(0, 0.001);
-  this.amplitude = 300;
+  this.returnVelocity = Math.random();
+  this.amplitude = AMP;
   this.fadeOut = false;
   this.restartCounter = 0;
   this.numCurves = 500;
@@ -21,13 +27,13 @@ var Attractor = function (particles) {
   this.param4 = 0.44;
   this.dt = 0.136;
 
-  this.path = new Path();
+  this.path = new Path(this.numCurves);
   this.p0 = new THREE.Vector3();
   this.t1 = 0;
 
   this.spherePoint = new THREE.Vector3(random(-w, w), random(-h, h), random(-w, w));
   this.spherePoint.normalize();
-  this.spherePoint.multiplyScalar(300);
+  this.spherePoint.multiplyScalar(AMP);
 
   this.x = this.spherePoint.x;
   this.y = this.spherePoint.y;
@@ -53,7 +59,7 @@ Attractor.prototype.createShape = function () {
   this.p0 = new THREE.Vector3();
   this.path = new Path(this.numCurves);
 
-  for (var i = this.numCurves - 1; i >= 0; i--) {
+  for (var i = 0; i < this.numCurves; i++) {
     this.path.curves[i] = new Curve(i * 2, i * 2 + 1);
     // Get next step in path
     var p1 = this.step();
@@ -62,6 +68,22 @@ Attractor.prototype.createShape = function () {
     this.path.points[i * 2] = p2;
     this.p0 = p2;
   };
+
+  this.drawPath(this.path);
+
+  if (this.fadeOut) {
+    this.restartCounter++;
+    this.strokeOpacity -= 0.5;
+
+    if (this.restartCounter > 50) {
+      this.param1 = random(0, 4);
+      this.param2 = random(0, 4);
+      this.t1 = 0;
+      this.fadeOut = false;
+      this.restartCounter = 0;
+      this.strokeOpacity = 25;
+    }
+  }
 };
 
 Attractor.prototype.drawPath = function (path) {
@@ -75,8 +97,8 @@ Attractor.prototype.drawPath = function (path) {
 
     this.amplitude = newAmplitude > this.amplitude ?  newAmplitude : this.amplitude;
 
-    if (this.amplitude > 300)
-      this.amplitude-=returnVelocity;
+    if (this.amplitude > AMP)
+      this.amplitude -= this.returnVelocity;
 
     c0.normalize();
     c0.multiplyScalar(this.amplitude);
@@ -96,10 +118,11 @@ Attractor.prototype.drawPath = function (path) {
     // stroke(c0.x * 30 + 90, 25 - restartCounter / 2);
     // strokeFill = c0.x*30 + 90;
     // point(c1.x, c1.y, c1.z);
-    if ( (c1.x !== NaN || c1.y !== NaN || c1.z !== NaN)
-        && (c1.x !== 0 && c1.y !== 0 && c1.z !== 0))
-      this.particles.geometry.vertices[i].set(c1.x, c1.y, c1.z);
+    c1.normalize();
+    c1.multiplyScalar(this.amplitude * 100);
+    this.particles.geometry.vertices[i].set(c1.x, c1.y, c1.z);
   }
+  this.particles.geometry.vertices.needsUpdate = true;
 };
 
 // For 3 points on a curve, calculate a quadratic control point.  This means
@@ -122,8 +145,8 @@ Attractor.prototype.step = function () {
   this.x += this.dx;
   this.y += this.dy;
   this.z += this.dz;
-  var output = new THREE.Vector3(this.x, this.y, this.z);
 
+  var output = new THREE.Vector3(this.x, this.y, this.z);
   return output;
 };
 
@@ -140,19 +163,4 @@ Attractor.prototype.render = function () {
   this.t1 += 5;
 
   this.createShape();
-  this.drawPath(this.path);
-
-  if (this.fadeOut) {
-    this.restartCounter++;
-    this.strokeOpacity -= 0.5;
-
-    if (this.restartCounter > 50) {
-      this.param1 = random(0, 4);
-      this.param2 = random(0, 4);
-      this.t1 = 0;
-      this.fadeOut = false;
-      this.restartCounter = 0;
-      this.strokeOpacity = 25;
-    }
-  }
 };

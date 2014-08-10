@@ -2,7 +2,7 @@
 
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-var container, camera, scene, renderer, particles, geometry, material, parameters, i, h, size;
+var container, camera, scene, renderer, particles, geometry, material, parameters, i, h;
 var mouseX = 0;
 var mouseY = 0;
 var color = [0, 0, 0.14];
@@ -26,11 +26,12 @@ function init() {
 
   // Setup camera
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 3000);
-  camera.position.z = 1000;
+  camera.position.z = 1000 * 0.75;
+  camera.rotation.x = 90 * Math.PI / 180;
 
   // Setup the Scene
   scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x000000, 0.0007);
+  scene.fog = new THREE.FogExp2(0x000000, 0.001);
 
   // Add particles to scene
   for (var i = 0; i < numOfAttractors; i ++ ) {
@@ -44,13 +45,14 @@ function init() {
 
       var v = new THREE.Vector3(random(-w, w), random(-h, h), random(-w, w));
       v.normalize();
-      v.multiplyScalar(300);
+      v.multiplyScalar(AMP);
 
       geometry.vertices.push(v);
     }
 
     material = new THREE.PointCloudMaterial({ size: 1 });
     particles = new THREE.PointCloud(geometry, material);
+    particles.sortParticles = true;
     scene.add(particles);
 
     var att = new Attractor(particles);
@@ -100,13 +102,13 @@ function render() {
   //     // object.position.set(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
   //   }
   // }
-
+  // debugger;
   for (var i = 0; i < numOfAttractors; i++) {
     attractors[i].render();
   }
 
-  h = (360 * (color[0] + time) % 360) / 360;
-  material.color.setHSL(h, color[1], color[2]);
+  // h = (360 * (color[0] + time) % 360) / 360;
+  // material.color.setHSL(h, color[1], color[2]);
 
   renderer.render(scene, camera);
 }
