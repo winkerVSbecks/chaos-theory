@@ -7,14 +7,13 @@ var AMP = 3;
 
 window.onclick = function () {
   newAmplitude = 4;
-  console.log('boom', newAmplitude);
 };
 
 // -----------------------------
 // Attractor
 // -----------------------------
 var Attractor = function (particles) {
-  this.returnVelocity = Math.random();
+  this.returnVelocity = Math.random() * 0.0005;
   this.amplitude = AMP;
   this.fadeOut = false;
   this.restartCounter = 0;
@@ -97,8 +96,10 @@ Attractor.prototype.drawPath = function (path) {
 
     this.amplitude = newAmplitude > this.amplitude ?  newAmplitude : this.amplitude;
 
-    if (this.amplitude > AMP)
+    if (this.amplitude > AMP) {
       this.amplitude -= this.returnVelocity;
+      // newAmplitude = 3;
+    }
 
     c0.normalize();
     c0.multiplyScalar(this.amplitude);
@@ -116,8 +117,6 @@ Attractor.prototype.drawPath = function (path) {
 
     // The Chaos
     // stroke(c0.x * 30 + 90, 25 - restartCounter / 2);
-    // strokeFill = c0.x*30 + 90;
-    // point(c1.x, c1.y, c1.z);
     c1.normalize();
     c1.multiplyScalar(this.amplitude * 100);
     this.particles.geometry.vertices[i].set(c1.x, c1.y, c1.z);

@@ -52,6 +52,7 @@ function init() {
 
     material = new THREE.PointCloudMaterial({ size: 1 });
     particles = new THREE.PointCloud(geometry, material);
+    particles.rotation.z = -Math.PI/2;
     particles.sortParticles = true;
     scene.add(particles);
 
@@ -94,23 +95,12 @@ function render() {
   camera.position.y += (-mouseY - camera.position.y) * 0.05;
   camera.lookAt(scene.position);
 
-  // for (var i = 0; i < scene.children.length; i++) {
-  //   var object = scene.children[i];
-
-  //   if (object instanceof THREE.PointCloud) {
-  //     // object.rotation.y = time * (i < 4 ? i + 1 : -(i + 1));
-  //     // object.position.set(Math.random() * 2000 - 1000, Math.random() * 2000 - 1000, Math.random() * 2000 - 1000);
-  //   }
-  // }
-  // debugger;
   for (var i = 0; i < numOfAttractors; i++) {
     attractors[i].render();
   }
 
-  // h = (360 * (color[0] + time) % 360) / 360;
-  // material.color.setHSL(h, color[1], color[2]);
-
   renderer.render(scene, camera);
+  newAmplitude = 3;
 }
 
 
